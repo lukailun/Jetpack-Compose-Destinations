@@ -36,7 +36,15 @@ fun MainUi(
             )
         }
 
-        CompatUi(navController = navController, viewModel = viewModel, themeStore = themeStore)
+        if (windowSize == WindowSize.Compact) {
+            CompatUi(navController = navController, viewModel = viewModel, themeStore = themeStore)
+        } else {
+            ExpandedUi(
+                navController = navController,
+                viewModel = viewModel,
+                themeStore = themeStore
+            )
+        }
     }
 }
 

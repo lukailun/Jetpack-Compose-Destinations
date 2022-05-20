@@ -16,23 +16,52 @@ import com.yourcompany.android.landscapes.R
 import com.yourcompany.android.landscapes.data.ThemeStore
 import com.yourcompany.android.landscapes.data.ViewModel
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ExpandedUi(
-  navController: NavHostController,
-  viewModel: ViewModel = ViewModel(),
-  themeStore: ThemeStore
+    navController: NavHostController,
+    viewModel: ViewModel = ViewModel(),
+    themeStore: ThemeStore
 ) {
 
-  val items = listOf(Screen.List, Screen.Settings)
+    val items = listOf(Screen.List, Screen.Settings)
 
-  Scaffold(
-    topBar = { TopAppBar(title = { Text(text = stringResource(id = R.string.app_name)) }) }
-  ) { innerPadding ->
-    Row(modifier = Modifier.padding(innerPadding)) {
-      // TODO: Add NavigationRail here
-      // TODO: Move NavHost here
+    Scaffold(
+        topBar = { TopAppBar(title = { Text(text = stringResource(id = R.string.app_name)) }) }
+    ) { innerPadding ->
+        Row(modifier = Modifier.padding(innerPadding)) {
+            NavigationRail(backgroundColor = MaterialTheme.colors.primary) {
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                val currentDestination = navBackStackEntry?.destination
+                items.forEach { screen ->
+                    NavigationRailItem(
+                        icon = {
+                            Icon(
+                                imageVector = screen.icon,
+                                contentDescription = screen.name
+                            )
+                        },
+                        label = { Text(text = screen.name) },
+                        selected = currentDestination?.route?.let { it == screen.path } ?: false,
+                        onClick = {
+                            navController.navigate(screen.path) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }
+                    )
+                }
+            }
+        }
+        NavHost(navController = navController, startDestination = Screen.List.path) {
+            composable(Screen.List.path) {
+                CityListWithDetailUi(viewModel = viewModel)
+            }
+            composable(Screen.Settings.path) {
+                SettingsUi(themeStore = themeStore)
+            }
+        }
     }
-    // TODO: Add NavHost for tablets here
-  }
 }

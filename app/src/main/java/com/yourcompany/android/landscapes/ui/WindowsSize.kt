@@ -1,19 +1,3 @@
-/*
- * Copyright 2021 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.yourcompany.android.landscapes.ui
 
 import android.app.Activity
@@ -43,16 +27,16 @@ enum class WindowSize { Compact, Medium, Expanded }
  */
 @Composable
 fun Activity.rememberWindowSizeClass(): WindowSize {
-  // Get the size (in pixels) of the window
-  val windowSize = rememberWindowSize()
+    // Get the size (in pixels) of the window
+    val windowSize = rememberWindowSize()
 
-  // Convert the window size to [Dp]
-  val windowDpSize = with(LocalDensity.current) {
-    windowSize.toDpSize()
-  }
+    // Convert the window size to [Dp]
+    val windowDpSize = with(LocalDensity.current) {
+        windowSize.toDpSize()
+    }
 
-  // Calculate the window size class
-  return getWindowSizeClass(windowDpSize)
+    // Calculate the window size class
+    return getWindowSizeClass(windowDpSize)
 }
 
 /**
@@ -60,13 +44,13 @@ fun Activity.rememberWindowSizeClass(): WindowSize {
  */
 @Composable
 private fun Activity.rememberWindowSize(): Size {
-  val configuration = LocalConfiguration.current
-  // WindowMetricsCalculator implicitly depends on the configuration through the activity,
-  // so re-calculate it upon changes.
-  val windowMetrics = remember(configuration) {
-    WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(this)
-  }
-  return windowMetrics.bounds.toComposeRect().size
+    val configuration = LocalConfiguration.current
+    // WindowMetricsCalculator implicitly depends on the configuration through the activity,
+    // so re-calculate it upon changes.
+    val windowMetrics = remember(configuration) {
+        WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(this)
+    }
+    return windowMetrics.bounds.toComposeRect().size
 }
 
 /**
@@ -74,8 +58,8 @@ private fun Activity.rememberWindowSize(): Size {
  */
 @VisibleForTesting
 fun getWindowSizeClass(windowDpSize: DpSize): WindowSize = when {
-  windowDpSize.width < 0.dp -> throw IllegalArgumentException("Dp value cannot be negative")
-  windowDpSize.width < 600.dp -> WindowSize.Compact
-  windowDpSize.width < 840.dp -> WindowSize.Medium
-  else -> WindowSize.Expanded
+    windowDpSize.width < 0.dp -> throw IllegalArgumentException("Dp value cannot be negative")
+    windowDpSize.width < 600.dp -> WindowSize.Compact
+    windowDpSize.width < 840.dp -> WindowSize.Medium
+    else -> WindowSize.Expanded
 }
