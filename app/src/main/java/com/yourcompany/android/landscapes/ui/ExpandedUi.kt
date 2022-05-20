@@ -2,7 +2,13 @@ package com.yourcompany.android.landscapes.ui
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.*
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.NavigationRail
+import androidx.compose.material.NavigationRailItem
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -32,6 +38,7 @@ fun ExpandedUi(
             NavigationRail(backgroundColor = MaterialTheme.colors.primary) {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentDestination = navBackStackEntry?.destination
+
                 items.forEach { screen ->
                     NavigationRailItem(
                         icon = {
@@ -54,13 +61,14 @@ fun ExpandedUi(
                     )
                 }
             }
-        }
-        NavHost(navController = navController, startDestination = Screen.List.path) {
-            composable(Screen.List.path) {
-                CityListWithDetailUi(viewModel = viewModel)
-            }
-            composable(Screen.Settings.path) {
-                SettingsUi(themeStore = themeStore)
+
+            NavHost(navController = navController, startDestination = Screen.List.path) {
+                composable(Screen.List.path) {
+                    CityListWithDetailUi(viewModel = viewModel)
+                }
+                composable(Screen.Settings.path) {
+                    SettingsUi(themeStore = themeStore)
+                }
             }
         }
     }
