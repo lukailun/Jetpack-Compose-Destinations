@@ -30,7 +30,32 @@ fun CompatUi(
     val items = listOf(Screen.List, Screen.Settings)
 
     Scaffold(
-        // TODO: Define bottomBar here
+        bottomBar = {
+            BottomNavigation(backgroundColor = MaterialTheme.colors.primary) {
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                val currentDestination = navBackStackEntry?.destination
+                items.forEach { screen ->
+                    BottomNavigationItem(
+                        icon = {
+                            Icon(
+                                imageVector = screen.icon,
+                                contentDescription = screen.name
+                            )
+                        },
+                        label = { Text(text = screen.name) },
+                        selected = currentDestination?.hierarchy?.any { it.route == screen.path } == true,
+                        onClick = {
+                            navController.navigate(screen.path) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        })
+                }
+            }
+        }
     ) { innerPadding ->
         NavHost(
             navController = navController,
