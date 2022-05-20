@@ -26,33 +26,39 @@ fun CompatUi(
     viewModel: ViewModel = ViewModel(),
     themeStore: ThemeStore
 ) {
-    // TODO: Define bottomBarVisibility here
+    val bottomBarVisibility = rememberSaveable { (mutableStateOf(true)) }
     val items = listOf(Screen.List, Screen.Settings)
 
     Scaffold(
         bottomBar = {
-            BottomNavigation(backgroundColor = MaterialTheme.colors.primary) {
-                val navBackStackEntry by navController.currentBackStackEntryAsState()
-                val currentDestination = navBackStackEntry?.destination
-                items.forEach { screen ->
-                    BottomNavigationItem(
-                        icon = {
-                            Icon(
-                                imageVector = screen.icon,
-                                contentDescription = screen.name
-                            )
-                        },
-                        label = { Text(text = screen.name) },
-                        selected = currentDestination?.hierarchy?.any { it.route == screen.path } == true,
-                        onClick = {
-                            navController.navigate(screen.path) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
+            AnimatedVisibility(
+                visible = bottomBarVisibility.value,
+                enter = slideInVertically(initialOffsetY = { it }),
+                exit = slideOutVertically(targetOffsetY = { it }),
+            ) {
+                BottomNavigation(backgroundColor = MaterialTheme.colors.primary) {
+                    val navBackStackEntry by navController.currentBackStackEntryAsState()
+                    val currentDestination = navBackStackEntry?.destination
+                    items.forEach { screen ->
+                        BottomNavigationItem(
+                            icon = {
+                                Icon(
+                                    imageVector = screen.icon,
+                                    contentDescription = screen.name
+                                )
+                            },
+                            label = { Text(text = screen.name) },
+                            selected = currentDestination?.hierarchy?.any { it.route == screen.path } == true,
+                            onClick = {
+                                navController.navigate(screen.path) {
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
                                 }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        })
+                            })
+                    }
                 }
             }
         }
@@ -63,6 +69,9 @@ fun CompatUi(
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(route = Screen.List.path) {
+                LaunchedEffect(null) {
+                    bottomBarVisibility.value = true
+                }
                 CityListUi(viewModel = viewModel,
                     onCitySelected = {
                         navController.navigate("detail/${it.name}")
@@ -72,9 +81,15 @@ fun CompatUi(
                 val cityName =
                     backstackEntry.arguments?.getString("city") ?: error("City is required")
                 val city = viewModel.cities.first { it.name == cityName }
+                LaunchedEffect(null) {
+                    bottomBarVisibility.value = false
+                }
                 CityDetailUi(viewModel = viewModel, city = city, isBigLayout = false)
             }
             composable(route = Screen.Settings.path) {
+                LaunchedEffect(null) {
+                    bottomBarVisibility.value = true
+                }
                 SettingsUi(themeStore = themeStore)
             }
         }
